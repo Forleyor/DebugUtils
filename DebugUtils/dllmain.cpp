@@ -25,7 +25,7 @@ int (*origLogger)(void* a1, const char* format, va_list args, void* a4, int a5, 
 int hookLogger(void* a1, const char* format, va_list args, void* a4, int a5, void* a6) 
 { 
 	char buffer[0x2000];
-	if (__stdio_common_vsprintf(0, buffer, 0x2000, format, nullptr, args) >= 0);
+	if (__stdio_common_vsprintf(0, buffer, 0x2000, format, nullptr, args) >= 0)
 	{
 		// Loops strings in excluded strings vector 
 		for (const std::string& excludeString : excludes)
