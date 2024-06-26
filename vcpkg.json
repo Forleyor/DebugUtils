@@ -1,0 +1,12 @@
+{
+  "dependencies": [
+    "minhook",
+    "spdlog",
+    {
+      "name": "inih",
+      "features": [
+        "cpp"
+      ]
+    }
+  ]
+}

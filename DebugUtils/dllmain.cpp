@@ -17,8 +17,8 @@ std::shared_ptr<spdlog::logger> logger;
 std::vector<std::string> excludes;
 
 // Function typedefs 
-typedef void* (*_execCommand)(std::string command, void* a2);
-_execCommand execCommand;
+//typedef void* (*_execCommand)(std::string command, void* a2);
+//_execCommand execCommand;
 
 // Function hook on X4's debug log function 
 int (*origLogger)(void* a1, const char* format, va_list args, void* a4, int a5, void* a6);
@@ -167,10 +167,12 @@ DWORD WINAPI setup(LPVOID param)
 		getProcID(L"X4", x4Id);
 
 		// get the address of X4.exe function handles /commands 
-		execCommand = (_execCommand)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 10 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 A0 48 81 EC 60 01 00 00 4C 8B F2");
+		//execCommand = (_execCommand)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 0F 29 74 24 30 48 83 3D FC 44 26 02 00 0F 84 BB 02");
 
-		if (!execCommand)
-			LogErrorAndExit("ExecuteCommand address: NULL!");
+		//if (!execCommand)
+		//	LogErrorAndExit("ExecuteCommand address: NULL!");
+
+		bool* shouldReloadUI = (bool*)GetModuleHandle(nullptr) + 0x2D72010;
 
 		// Get the user defined keycode from ini file, defaults to VK_HOME (0x24) if not set in ini file 
 		UINT reloadUIKeyCode = (UINT)config.GetInteger("Hotkeys", "reloadUI", 0x24);
@@ -183,8 +185,6 @@ DWORD WINAPI setup(LPVOID param)
 		logger->info("Config option: Reload UI hotkey finished setup successfully");
 		logger->info("Hotkeys ready!");
 
-		std::string command = "reloadui";
-
 		// When hotkey pressed, reload UI 
 		MSG msg = { nullptr };
 		while (GetMessage(&msg, nullptr, 0, 0) != 0)
@@ -194,7 +194,7 @@ DWORD WINAPI setup(LPVOID param)
 				if (isActiveWindow())
 				{
 					logger->info("Reloading UI!");
-					execCommand(command, nullptr);
+					*shouldReloadUI = true;
 				}
 			}
 		}
