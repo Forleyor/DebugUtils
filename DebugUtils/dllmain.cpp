@@ -172,7 +172,13 @@ DWORD WINAPI setup(LPVOID param)
 		//if (!execCommand)
 		//	LogErrorAndExit("ExecuteCommand address: NULL!");
 
-		bool* shouldReloadUI = (bool*)GetModuleHandle(nullptr) + 0x2D72010;
+		int reloadUIAddress = config.GetInteger("Offsets", "reloadAddress", 0);
+
+		if (reloadUIAddress == 0)
+			LogErrorAndExit("ReloadUI Address from config was 0!");
+
+		bool* shouldReloadUI = (bool*)GetModuleHandle(nullptr) + reloadUIAddress;
+		logger->info("shouldReloadUI address: 0x{0:x}", (uintptr_t)shouldReloadUI);
 
 		// Get the user defined keycode from ini file, defaults to VK_HOME (0x24) if not set in ini file 
 		UINT reloadUIKeyCode = (UINT)config.GetInteger("Hotkeys", "reloadUI", 0x24);
