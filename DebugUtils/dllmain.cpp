@@ -17,8 +17,8 @@ std::shared_ptr<spdlog::logger> logger;
 std::vector<std::string> excludes;
 
 // Function typedefs 
-//typedef void* (*_execCommand)(std::string command, void* a2);
-//_execCommand execCommand;
+typedef void (*_reloadUI)();
+_reloadUI reloadUI;
 
 // Function hook on X4's debug log function 
 int (*origLogger)(void* a1, const char* format, va_list args, void* a4, int a5, void* a6);
@@ -167,24 +167,18 @@ DWORD WINAPI setup(LPVOID param)
 		getProcID(L"X4", x4Id);
 
 		// get the address of X4.exe function handles /commands 
-		//execCommand = (_execCommand)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 0F 29 74 24 30 48 83 3D FC 44 26 02 00 0F 84 BB 02");
+		reloadUI = (_reloadUI)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 0F 29 74 24 ? 48 83 3D");
 
-		//if (!execCommand)
-		//	LogErrorAndExit("ExecuteCommand address: NULL!");
+		if (!reloadUI)
+			LogErrorAndExit("ExecuteCommand address: NULL!");
 
-		int reloadUIAddress = config.GetInteger("Offsets", "reloadAddress", 0);
-
-		if (reloadUIAddress == 0)
-			LogErrorAndExit("ReloadUI Address from config was 0!");
-
-		bool* shouldReloadUI = (bool*)GetModuleHandle(nullptr) + reloadUIAddress;
-		logger->info("shouldReloadUI address: 0x{0:x}", (uintptr_t)shouldReloadUI);
+		logger->info("reloadUI address: 0x{0:x}", (uintptr_t)reloadUI);
 
 		// Get the user defined keycode from ini file, defaults to VK_HOME (0x24) if not set in ini file 
 		UINT reloadUIKeyCode = (UINT)config.GetInteger("Hotkeys", "reloadUI", 0x24);
 
 		// Register hotkey for reloading UI 
-		if (!RegisterHotKey(nullptr, 1, MOD_NOREPEAT, reloadUIKeyCode))
+		if (!RegisterHotKey(GetActiveWindow(), 1, MOD_NOREPEAT, reloadUIKeyCode))
 			LogErrorAndExit("Failed to register hotkey: Reload UI. Try another key in the ini file.");
 
 		logger->info("Registered hotkey: Reload UI.");
@@ -200,7 +194,7 @@ DWORD WINAPI setup(LPVOID param)
 				if (isActiveWindow())
 				{
 					logger->info("Reloading UI!");
-					*shouldReloadUI = true;
+					reloadUI();
 				}
 			}
 		}
