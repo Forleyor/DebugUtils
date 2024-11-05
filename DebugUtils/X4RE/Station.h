@@ -21,7 +21,7 @@ namespace X4RE
         char pad_0328[32];                                          //0x0328
         char code[8];                                               //0x0348 - the 6 digit code (example: "ZC5-187")
         char pad_0350[24];                                          //0x0350
-        FactionClass* factionClass;                                 //0x0368
+        FactionClass* ownerFaction;                                 //0x0368
         char pad_0370[592];                                         //0x0370
         std::string stationTypeName;                                //0x05C0
     };
