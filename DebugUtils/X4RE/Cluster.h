@@ -1,11 +1,17 @@
 #pragma once
 
-class Cluster
-{
-public:
+#include "Macro.h"
+#include "Galaxy.h"
 
-    void* vTable;                                               //0x0000
-    char pad_0000[88];                                          //0x0008
-    class Macro* macro;                                         //0x0060
-    class Galaxy* Galaxy;                                       //0x0068
-};
+namespace X4RE
+{
+    class Cluster
+    {
+    public:
+
+        void* vTable;                                               //0x0000
+        char pad_0000[88];                                          //0x0008
+        Macro* macro;                                               //0x0060
+        Galaxy* Galaxy;                                             //0x0068
+    };
+}

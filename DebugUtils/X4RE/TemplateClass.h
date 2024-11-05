@@ -1,7 +1,10 @@
 #pragma once
 
-class TemplateComponent
+namespace X4RE
 {
-public:
-    void* vTable;                                               //0x0000
-};
+    class TemplateComponent
+    {
+    public:
+        void* vTable;                                               //0x0000
+    };
+}
