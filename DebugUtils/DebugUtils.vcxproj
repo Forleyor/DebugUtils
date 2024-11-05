@@ -104,6 +104,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="mem\mem.h" />
+    <ClInclude Include="X4RE\Cluster.h" />
+    <ClInclude Include="X4RE\FactionClass.h" />
+    <ClInclude Include="X4RE\Galaxy.h" />
+    <ClInclude Include="X4RE\Macro.h" />
+    <ClInclude Include="X4RE\Sector.h" />
+    <ClInclude Include="X4RE\Station.h" />
+    <ClInclude Include="X4RE\TemplateClass.h" />
+    <ClInclude Include="X4RE\Zone.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
