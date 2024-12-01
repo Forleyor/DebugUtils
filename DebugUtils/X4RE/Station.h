@@ -3,7 +3,7 @@
 
 #include "FactionClass.h"
 #include "Macro.h"
-#include "TemplateClass.h"
+#include "TemplateComponent.h"
 #include "Zone.h"
 
 namespace X4RE

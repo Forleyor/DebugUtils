@@ -9,6 +9,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "mem/mem.h"
+#include "X4RE/Station.h"
 
 // Globals
 DWORD foregroundWindowId = NULL;
@@ -17,8 +18,11 @@ std::shared_ptr<spdlog::logger> logger;
 std::vector<std::string> excludes;
 
 // Function typedefs
-typedef void (*_reloadUI)();
-_reloadUI reloadUI;
+typedef float (*__GetUIScaleFactor)();
+__GetUIScaleFactor _GetUIScaleFactor;
+
+typedef void (*__SetUIScaleFactor)(float factor);
+__SetUIScaleFactor _SetUIScaleFactor;
 
 // Function hook on X4's debug log function
 int (*origLogger)(void* a1, const char* format, va_list args, void* a4, int a5, void* a6);
@@ -40,6 +44,13 @@ int hookLogger(void* a1, const char* format, va_list args, void* a4, int a5, voi
 
     // Otherwise log the message to X4's debug log as normal
     return origLogger(a1, format, args, a4, a5, a6);
+}
+
+void someFunction(X4RE::Station* myStation)
+{
+    logger->info("My station is in cluster with macro name {}", myStation->zone->sector->cluster->macro->macroName);
+    logger->info("My station is named {}", myStation->stationName);
+    logger->info("My station is of type {}", myStation->stationTypeName);
 }
 
 // Splits the keys in DebugUtils.ini ExcludedLogStrings section into a vector of strings
@@ -167,12 +178,14 @@ DWORD WINAPI setup(LPVOID param)
         getProcID(L"X4", x4Id);
 
         // get the address of X4.exe function handles /commands
-        reloadUI = (_reloadUI)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 0F 29 74 24 ? 48 83 3D");
+        _GetUIScaleFactor = (__GetUIScaleFactor)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "8B 05 ? ? ? ? 0F 57 C0 F3 0F 10 0D ? ? ? ? F3 0F 10 15");
+        _SetUIScaleFactor = (__SetUIScaleFactor)scan_idastyle(info.lpBaseOfDll, info.SizeOfImage, "48 83 EC 48 0F 57 C9");
 
-        if (!reloadUI)
-            LogErrorAndExit("ExecuteCommand address: NULL!");
+        if (!_GetUIScaleFactor || !_SetUIScaleFactor)
+            LogErrorAndExit("Failed to resolve function pointers during Reload UI hotkey setup!");
 
-        logger->info("reloadUI address: 0x{0:x}", (uintptr_t)reloadUI);
+		logger->info("GetUIScaleFactor address: 0x{0:x}", (uintptr_t)_GetUIScaleFactor);
+		logger->info("SetUIScaleFactor address: 0x{0:x}", (uintptr_t)_SetUIScaleFactor);
 
         // Get the user defined keycode from ini file, defaults to VK_HOME (0x24) if not set in ini file
         UINT reloadUIKeyCode = (UINT)config.GetInteger("Hotkeys", "reloadUI", 0x24);
@@ -207,7 +220,7 @@ DWORD WINAPI setup(LPVOID param)
                 if (isActiveWindow())
                 {
                     logger->info("Reloading UI!");
-                    reloadUI();
+                    _SetUIScaleFactor(_GetUIScaleFactor());
                 }
             }
         }
