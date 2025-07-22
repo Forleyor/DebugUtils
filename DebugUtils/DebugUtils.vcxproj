@@ -67,6 +67,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,6 +112,7 @@
     <ClInclude Include="X4RE\Sector.h" />
     <ClInclude Include="X4RE\Station.h" />
     <ClInclude Include="X4RE\TemplateClass.h" />
+    <ClInclude Include="X4RE\TemplateComponent.h" />
     <ClInclude Include="X4RE\Zone.h" />
   </ItemGroup>
   <ItemGroup>
