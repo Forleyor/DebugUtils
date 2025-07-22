@@ -8,4 +8,4 @@ X4 debug log filtering
 # Install
 Download DebugUtils.zip from [Releases](https://github.com/Forleyor/DebugUtils/releases)  
 Extract files to root X4 Foundations folder  
-DebugUtils has a log file and config .ini file in "X4 Foundations\plugins\DebugUtils"
+DebugUtils has a log file (generated after starting X4) and config .ini file in "X4 Foundations\plugins\DebugUtils"
